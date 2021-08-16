@@ -335,9 +335,9 @@ class PagesGenerator {
 	            setSubmitting«booking.name»Error(undefined)
 	    
 	            var result = await httpPost<Create«booking.name»RequestModel>("/«booking.name»", {
-	                seat: «booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0],
-	                seatSchedule: «booking.name»ResourceSchedules.filter(e => e.id === selected«booking.name»ResourceSchedule)[0],
-	                cust: user«getBookingCustomerType(booking).name»
+	                Room: «booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0],
+	                plan: «booking.name»ResourceSchedules.filter(e => e.id === selected«booking.name»ResourceSchedule)[0],
+	                cus: user«getBookingCustomerType(booking).name»
 	            } as Create«booking.name»RequestModel)
 	    
 	            if(result.isSuccess) {
@@ -404,7 +404,7 @@ class PagesGenerator {
 		                                        : <FormControl style={{width: "100%"}} variant="outlined">
 		                                            <InputLabel id="demo-simple-select-outlined-label">«getBookingScheduleDeclaration(booking).name»</InputLabel>
 		                                            <Select variant="outlined" value={selected«booking.name»ResourceSchedule} label={"«getBookingScheduleDeclaration(booking).name»"} onChange={change => setSelected«booking.name»ResourceSchedule(change.target.value as string)}>
-		                                            {«booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0]?.schedules?.map((ele, key) => {
+		                                            {«booking.name»Resource.filter(e => e.id === selected«booking.name»Resource)[0]?.plan?.map((ele, key) => {
 														return <MenuItem key={key} value={ele.id}>{ele.«getDisplayAttribute(getBookingScheduleDeclaration(booking) as Schedule)»}</MenuItem>
 													})}
 		                                            </Select>

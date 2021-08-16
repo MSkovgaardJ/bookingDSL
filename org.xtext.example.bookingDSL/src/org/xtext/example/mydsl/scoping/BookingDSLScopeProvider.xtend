@@ -13,8 +13,9 @@ import org.xtext.example.mydsl.bookingDSL.Attribute
 import org.xtext.example.mydsl.bookingDSL.BookingDSLPackage
 import org.xtext.example.mydsl.bookingDSL.Customer
 import org.xtext.example.mydsl.bookingDSL.Resource
-import java.util.List
+import org.xtext.example.mydsl.bookingDSL.Var
 import java.util.HashSet
+import java.util.List
 
 /** 
  * This class contains custom scoping description.
@@ -28,45 +29,66 @@ class BookingDSLScopeProvider extends AbstractBookingDSLScopeProvider {
 		switch (context) {
 			case ref == BookingDSLPackage.Literals.VAR__NAME: {
 				var customer = EcoreUtil2::getContainerOfType(context, Customer);
-				if(customer !== null)
-				{
-					return Scopes.scopeFor(customer.expandCustomerScope);
+				if(customer !== null) {
+					return Scopes.scopeFor(customer.extentCusScope)	
 				}
 				
 				var resource = EcoreUtil2::getContainerOfType(context, Resource);
-				if(resource !== null)
-				{
-					return Scopes.scopeFor(resource.expandRescourseScope)
+				if(resource !== null) {
+					return Scopes.scopeFor(resource.extentResScope)
 				}
-			}
-			
-			default: {
-				
 			}
 		}
 		super.getScope(context, ref);
 	}
 	
-	def expandCustomerScope(Customer customer)
+	
+	
+	def extentCusScope(Customer customer)
 	{
 		val scope = new ArrayList<Attribute>();
-		var visited = new ArrayList<Customer>();
+		var visited = new HashSet<Customer>();
 		
 		visited.add(customer);
 		customer.members.filter(Attribute).forEach[e | scope.add(e)]
-		
+		if(customer.superType !== null) {
+			return extentCustomerScope(customer.superType, scope, visited)
+		}
 		return scope;
 		
+	}
+		
+	def List<Attribute> extentCustomerScope(Customer customer, List<Attribute> scope, HashSet<Customer> visited) {
+		if(visited.contains(customer)) return new ArrayList<Attribute>
+		visited.add(customer)
+		customer.members.filter(Attribute).forEach[e | scope.add(e)]
+		if(customer.superType !== null) {
+			return extentCustomerScope(customer.superType, scope, visited)
 		}
+		return scope;
+	}
+		
 	
-	def expandRescourseScope(Resource res)
+	def extentResScope(Resource res)
 	{
 		val scope = new ArrayList<Attribute>();
-		var visited = new ArrayList<Resource>();
+		var visited = new HashSet<Resource>();
 		
 		visited.add(res);
 		res.members.filter(Attribute).forEach[e | scope.add(e)]
-		
+		if(res.superType !== null) {
+			return extentResourceScope(res.superType, scope, visited)
+		}
+		return scope;
+	}
+	
+	def List<Attribute> extentResourceScope(Resource resource, List<Attribute> scope, HashSet<Resource> visited) {
+		if(visited.contains(resource)) return new ArrayList<Attribute>
+		visited.add(resource)
+		resource.members.filter(Attribute).forEach[e | scope.add(e)]
+		if(resource.superType !== null) {
+			return extentResourceScope(resource, scope, visited)
+		}
 		return scope;
 	}
 }
